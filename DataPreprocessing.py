@@ -12,6 +12,10 @@ class PreprocessingCSV():
     globalCurrentBin = 0 #Keeps track of the range of bins belonging to each chromosome
     global_basepath = './Data/'
 
+    def __init__(self):
+        if not os.path.exists(self.global_basepath + 'Processed/'):
+            os.mkdir(self.global_basepath + 'Processed/')
+
     #Loads in the information and writes contents as "expected output, 100k character bin" per line
     def process100kChunks(self, chrom):
         processedDataFile = open(self.global_basepath + 'Processed/' + chrom + 'rawPCA.fa', 'w')
@@ -27,7 +31,7 @@ class PreprocessingCSV():
         chunkNum = 0 # To keep track of our progress
         chunk100k = "" # Stores each bin of characters
             
-        with open(self.global_basepath + 'Genome_DataMM10/' + chrom + '.fa') as rawFile:
+        with open(self.global_basepath + 'Genome_Data/' + chrom + '.fa') as rawFile:
             next(rawFile) # Skip first line (labels)
             for line in rawFile:
                 if (count < 1999): # collect all the data into our bin
@@ -303,8 +307,8 @@ if __name__ == '__main__':
     p = PreprocessingCSV()
     extra_names = "_mESC" # An extra string to attach to the resulting file folders
 
-    #p.reprocess()
-    #p.NormalizeFiles()
-    #p.remove_centroids()
+    p.reprocess()
+    p.NormalizeFiles()
+    p.remove_centroids()
     p.mpOnehotEncoding(extra_names)
     #p.getTotalDistribution()
