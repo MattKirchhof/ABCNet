@@ -1,0 +1,15 @@
+epochs 1
+batch_size 1
+optim AdamW
+loss MSE
+learning_rate 0.0003
+momentum 0.9
+data_loader_workers 32
+drop_last False
+use_cuda False
+use_early_stopping False
+use_variable_LR False
+DEF_batch_size 1
+DEF_drop_last False
+model_name ABC-4c-gn-rc_AdamW100_mESC
+data_path ./Data/ProcessedOneHot_4c_gn_mESC/chr
