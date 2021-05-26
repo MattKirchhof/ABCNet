@@ -68,10 +68,10 @@ def getOptimizer(model):
         raise Exception("Unknown Optimizer specified")
     
 
-def getLoss():
-    if args['loss'] == 'MSE':
+def getLoss(ABCargs):
+    if ABCargs['loss'] == 'MSE':
         return torch.nn.MSELoss()
-    elif args['loss'] == 'L1':
+    elif ABCargs['loss'] == 'L1':
         return torch.nn.L1Loss()
     else:
         raise Exception("Unknown Loss specified")
@@ -172,7 +172,7 @@ def trainABCNet(model, dloader_train, dloader_val, dloader_test, args):
     printToNetLog(args, n_batches)
 
     # Init the loss and optimizer functions
-    model.loss = getLoss()
+    model.loss = getLoss(args)
     model.optimizer = getOptimizer(model)
 
     print("Performing initial Validation Test")
@@ -278,7 +278,7 @@ def loadArgs(args):
     args["use_early_stopping"] = False
     args["use_variable_LR"] = False
     args["batch_size"] = 32
-    args["data_loader_workers"] = 16
+    args["data_loader_workers"] = os.cpu_count()
     args['drop_last'] = True
     args["zeroNormalized"] = 0.4855277624356476 # This we calculated as the "0" value normalized 
     args["use_cuda"] = True

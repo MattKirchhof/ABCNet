@@ -4,7 +4,6 @@ optim AdamW
 loss MSE
 learning_rate 0.0003
 momentum 0.9
-data_loader_workers 32
 drop_last False
 use_cuda False
 use_early_stopping False

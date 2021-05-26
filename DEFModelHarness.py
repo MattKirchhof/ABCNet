@@ -315,7 +315,7 @@ def train_and_test(ABCNet, args):
 
     for i,ckptfile in enumerate(ckptfiles):
         args['model_name'] = ckptfile.split('/')[-1][:-3]
-        args['model_chromosome'] = int(args['model_name'].split('-')[-2][3:])
+        args['model_chromosome'] = int(args['model_name'].split('-')[-1][3:])
         print("Gathering ABCNET predictions for: " + args['model_name'])
         print('  Withheld Chromosome: ', args['model_chromosome'])
 
@@ -351,13 +351,13 @@ if __name__ == '__main__':
     '''
     Uses a pretrained ABCNet and runs as normal
     '''
-    args = {'use_cuda':True,
+    args = {'use_cuda':False,
             'zeroNormalized':0.5,
             'DEF_batch_size':1,
             'dir':'./Data',
             'data_path':'',
             'models_src':'./Data/ModelCkpts',
-            'data_loader_workers':32,
+            'data_loader_workers':os.cpu_count(),
             'transitional_bounds':0.0,
             'batch_size':1,
             'model_chromosome':0,
