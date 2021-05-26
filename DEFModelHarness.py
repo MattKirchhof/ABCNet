@@ -135,8 +135,8 @@ def train_DEFNet(DEFModel, DEFloader_train, DEFloader_val, args):
     Trains the DEFNet given the training and validation loaders
     Stops once validation does not improve for X epochs
     '''    
-    DEFModel.loss = ABCModelHarness.getLoss()
-    DEFModel.optimizer = ABCModelHarness.getOptimizer(DEFModel)
+    DEFModel.loss = ABCModelHarness.getLoss(args)
+    DEFModel.optimizer = ABCModelHarness.getOptimizer(DEFModel, args)
 
     # Train DEF until valid decreases
     best_DEF_val_acc, curr_DEF_val_acc = 0.0, 0.01
@@ -298,7 +298,7 @@ def plotPredsBeforeAfter(args):
             axes[i-1].legend()
 
     plt.tight_layout()
-    plt.savefig('DEFResults/DEFPredictions' + args['model_name'] + '.png')
+    plt.savefig(os.path.join( args['dir'],'DEFResults/DEFPredictions' + args['model_name'] + '.png'))
 
 
 def train_and_test(ABCNet, args):
@@ -314,7 +314,7 @@ def train_and_test(ABCNet, args):
         os.mkdir(os.path.join( args['dir'], 'DEFResults'))
 
     for i,ckptfile in enumerate(ckptfiles):
-        args['model_name'] = ckptfile.split('/')[-1][:-3]
+        args['model_name'] = ckptfile.split('\\')[-1][:-3]
         args['model_chromosome'] = int(args['model_name'].split('-')[-1][3:])
         print("\nGathering ABCNET predictions for: " + args['model_name'])
         print('  Withheld Chromosome: ', args['model_chromosome'])
@@ -336,7 +336,7 @@ def train_and_test(ABCNet, args):
 
         for i in range(5):
             print("Training DEFNet instance: " + str(i))
-            DEFModel = NetworkArchitectures.DEFNet()
+            DEFModel = NetworkArchitectures.DEFNet(useCuda=args['use_cuda'])
             if args['use_cuda']:
                 DEFModel.to('cuda')
             DEFModel = train_DEFNet(DEFModel, DEFtrain_loader, DEFval_loader, args)
@@ -356,7 +356,7 @@ if __name__ == '__main__':
             'DEF_batch_size':1,
             'dir':'./Data',
             'data_path':'',
-            'models_src':'./Data/ModelCkpts',
+            'models_src':os.path.join('.\Data', 'ModelCkpts'),
             'data_loader_workers':os.cpu_count(),
             'transitional_bounds':0.0,
             'batch_size':1,

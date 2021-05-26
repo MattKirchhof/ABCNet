@@ -59,19 +59,19 @@ def storeTrainAccuracies(args, pred, labels, zero_norms, train_loss = -1.0):
             trainl.write(str(train_loss) + "\n")
 
 
-def getOptimizer(model):
-    if args["optim"] == "SGD" :
-        return torch.optim.SGD(model.parameters(), lr=args["learning_rate"], momentum=args["momentum"], nesterov=True)
-    elif args["optim"] == "AdamW" :
-        return torch.optim.AdamW(model.parameters(), lr=args["learning_rate"], betas=(0.9, 0.999), eps=1e-08, weight_decay=0.01, amsgrad=False)
+def getOptimizer(model, modelArgs):
+    if modelArgs["optim"] == "SGD" :
+        return torch.optim.SGD(model.parameters(), lr=modelArgs["learning_rate"], momentum=modelArgs["momentum"], nesterov=True)
+    elif modelArgs["optim"] == "AdamW" :
+        return torch.optim.AdamW(model.parameters(), lr=modelArgs["learning_rate"], betas=(0.9, 0.999), eps=1e-08, weight_decay=0.01, amsgrad=False)
     else:
         raise Exception("Unknown Optimizer specified")
     
 
-def getLoss(ABCargs):
-    if ABCargs['loss'] == 'MSE':
+def getLoss(modelArgs):
+    if modelArgs['loss'] == 'MSE':
         return torch.nn.MSELoss()
-    elif ABCargs['loss'] == 'L1':
+    elif modelArgs['loss'] == 'L1':
         return torch.nn.L1Loss()
     else:
         raise Exception("Unknown Loss specified")
@@ -173,7 +173,7 @@ def trainABCNet(model, dloader_train, dloader_val, dloader_test, args):
 
     # Init the loss and optimizer functions
     model.loss = getLoss(args)
-    model.optimizer = getOptimizer(model)
+    model.optimizer = getOptimizer(model, args)
 
     print("Performing initial Validation Test")
     acc = runABCTest("Validation", model, dloader_val, 0, args)

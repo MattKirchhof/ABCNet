@@ -10,10 +10,11 @@ class DEFNet(torch.nn.Module):
     The aim is to build a model capable of understanding correlation between nearby genomic bins to the current bin
     '''
 
-    def __init__(self):
+    def __init__(self, useCuda):
         super(DEFNet, self).__init__()
         self.loss = None
         self.optimizer = None
+        self.use_cuda = useCuda
 
         step = 2
         convLayers = 16
@@ -21,8 +22,12 @@ class DEFNet(torch.nn.Module):
 
 
     def forward(self, x):
-        y = torch.tensor([], requires_grad=True).to('cuda')
-        outputs = torch.tensor([], requires_grad=True).to('cuda')
+        y = torch.tensor([], requires_grad=True)
+        outputs = torch.tensor([], requires_grad=True)
+
+        if self.use_cuda:
+            y.to('cuda')
+            outputs.to('cuda')
 
         for i,l in enumerate(self.convs):
             y = F.relu(l(x))
