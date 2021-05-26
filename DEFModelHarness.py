@@ -316,7 +316,7 @@ def train_and_test(ABCNet, args):
     for i,ckptfile in enumerate(ckptfiles):
         args['model_name'] = ckptfile.split('/')[-1][:-3]
         args['model_chromosome'] = int(args['model_name'].split('-')[-1][3:])
-        print("Gathering ABCNET predictions for: " + args['model_name'])
+        print("\nGathering ABCNET predictions for: " + args['model_name'])
         print('  Withheld Chromosome: ', args['model_chromosome'])
 
         ABCModel = NetworkArchitectures.ABCNET()
