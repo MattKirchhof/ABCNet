@@ -1,4 +1,4 @@
-﻿# ABCNet
+﻿# ABCNet and DEFNet
 
 ABCNet is a convolutional neural network for the prediction of A/B compartments directly from a reference genome.
 
