@@ -9,6 +9,9 @@ ABCNet has limited requirements. Only the following packages are required:
 1) Python 3.9.4 or later -> Earlier versions of python3 should also work just fine
 2) Numpy -> Install using pip with "pip install numpy"
 3) PyTorch -> Install by visiting https://pytorch.org/get-started/locally/
+4) Pandas -> Install using pip with "pip install pandas"
+5) Matplotlib -> Install using pip with "pip install pandas"
+6) sklearn -> Install using pip with "pip install sklearn"
 
 ## Running ABCNet yourself
 
