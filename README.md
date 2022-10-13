@@ -11,7 +11,7 @@ ABCNet has limited requirements. Only the following packages are required:
 3) PyTorch -> Install by visiting https://pytorch.org/get-started/locally/
 4) Pandas -> Install using pip with "pip install pandas"
 5) Matplotlib -> Install using pip with "pip install pandas"
-6) sklearn -> Install using pip with "pip install sklearn"
+6) Sklearn -> Install using pip with "pip install sklearn"
 
 ## Running ABCNet yourself
 
@@ -44,6 +44,11 @@ The DEFNet model runs on top of the ABCNet model output. Therefore, you must fir
 - DEFNet will then Train on these ABCNet predictions, using the true compartment annotations as ground truth
 - DEFnet results will be output to the "./Data/DEFResults" directory
 
+## Citing ABC/DEFNet
+If ABCNet was used in your analysis, please cite:
+
+M. Kirchhof, C. J. Cameron and S. C. Kremer, "End-to-end chromosomal compartment prediction from reference genomes," _2021 IEEE International Conference on Bioinformatics and Biomedicine (BIBM)_, 2021, pp. 50-57, doi: [10.1109/BIBM52615.2021.9669521](https://doi.org/10.1109/BIBM52615.2021.9669521)
+
 # Graph Generating Scripts
 
 The purpose of these scripts is to anaylze and visualize the datasets used and output by ABCnet. The compartment files such as "mouse_compartment_file.txt" can be visualized using the scripts: 
@@ -59,9 +64,8 @@ The scripts bin_predictions.py and raw_predictions.py can be used to visualize t
 
 ## How to run Graph Scripts
 
-## Citing ABC/DEFNet
-If ABCNet was used in your analysis, please cite:
+### Command line details
 
-M. Kirchhof, C. J. Cameron and S. C. Kremer, "End-to-end chromosomal compartment prediction from reference genomes," _2021 IEEE International Conference on Bioinformatics and Biomedicine (BIBM)_, 2021, pp. 50-57, doi: [10.1109/BIBM52615.2021.9669521](https://doi.org/10.1109/BIBM52615.2021.9669521)
+
 
 
