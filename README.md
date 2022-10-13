@@ -41,7 +41,24 @@ The DEFNet model runs on top of the ABCNet model output. Therefore, you must fir
 - DEFNet will then Train on these ABCNet predictions, using the true compartment annotations as ground truth
 - DEFnet results will be output to the "./Data/DEFResults" directory
 
+# Graph Generating Scripts
+
+The purpose of these scripts is to anaylze and visualize the datasets used and output by ABCnet. The compartment files such as "mouse_compartment_file.txt" can be visualized using the scripts: 
+
+1. binary_compartment.py: generates a visual discretized representation of the compartments from 2 compartment files.
+2. bin_raw_combination.py: generates both a continuous and discretized representation of compartments from a single compartment file. 
+
+The scripts bin_predictions.py and raw_predictions.py can be used to visualize the output from an ABCnet model, predictions.txt. The scripts are used to compare predictions vs targets:
+
+3. bin_predictions.py: discretizes the predictions output by the model and compares them to the target value which has also been discretized. 
+4. raw_predictions.py: shows the continuous output of predictions from the ABCnet model compared to the targets values
+
+
+## How to run Graph Scripts
+
 ## Citing ABC/DEFNet
 If ABCNet was used in your analysis, please cite:
 
 M. Kirchhof, C. J. Cameron and S. C. Kremer, "End-to-end chromosomal compartment prediction from reference genomes," _2021 IEEE International Conference on Bioinformatics and Biomedicine (BIBM)_, 2021, pp. 50-57, doi: [10.1109/BIBM52615.2021.9669521](https://doi.org/10.1109/BIBM52615.2021.9669521)
+
+
