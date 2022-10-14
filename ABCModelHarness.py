@@ -14,10 +14,10 @@ import DEFModelHarness
 from DNADataLoader import DNADataset
 from ABCNet import ABCNET, DEFNet
 
-def printToNetLog(args, n_batches):
-    if not os.path.exists("./Data/Results"):
-        os.mkdir("./Data/Results")
-    f = open(os.path.join("./Data/Results", str(args["model_chromosome"]) + "," + str(args["instance_num"]) + "," + "TrainingLog.txt"), "a")
+def printToNetLog(args, n_batches, file_path):
+    if not os.path.exists(file_path + "/Results"):
+        os.mkdir( file_path + "/Results")
+    f = open(os.path.join(file_path + "/Results", str(args["model_chromosome"]) + "," + str(args["instance_num"]) + "," + "TrainingLog.txt"), "a")
     f.write("\n")
     f.write("------- NEW RUN PARAMETERS -------\n")
     f.write("batch_size=" + str(args["batch_size"]) + '\n')
@@ -34,7 +34,7 @@ def printToNetLog(args, n_batches):
     print("=" * 30)
 
 
-def storeTrainAccuracies(args, pred, labels, zero_norms, train_loss = -1.0):
+def storeTrainAccuracies(args, pred, labels, zero_norms, file_path, train_loss = -1.0):
     TP,FP,TN,FN = 0,0,0,0
 
     for i,p in enumerate(pred):
@@ -51,11 +51,11 @@ def storeTrainAccuracies(args, pred, labels, zero_norms, train_loss = -1.0):
             else:
                 FP += 1
 
-    with open(os.path.join("./Data/Results", str(args["model_chromosome"]) + "," + str(args["instance_num"]) + "," + "TrainAcc.txt"), "a") as trainf:
+    with open(os.path.join(file_path + "/Results", str(args["model_chromosome"]) + "," + str(args["instance_num"]) + "," + "TrainAcc.txt"), "a") as trainf:
         trainf.write(str((TP+TN)/(TP+TN+FP+FN))+"\n")
     
     if train_loss != -1.0:
-        with open(os.path.join("./Data/Results", str(args["model_chromosome"]) + "," + str(args["instance_num"]) + "," + "TrainLoss.txt"), "a") as trainl:
+        with open(os.path.join(file_path + "/Results", str(args["model_chromosome"]) + "," + str(args["instance_num"]) + "," + "TrainLoss.txt"), "a") as trainl:
             trainl.write(str(train_loss) + "\n")
 
 
@@ -77,7 +77,7 @@ def getLoss(modelArgs):
         raise Exception("Unknown Loss specified")
 
 
-def runABCTest(testType, model, dataLoader, epoch, args, return_preds=False):
+def runABCTest(testType, model, dataLoader, epoch, args, file_path, return_preds=False):
     print("\nRunning " + testType + "...")
 
     model.eval() # Notify layers we are in test mode
@@ -134,7 +134,7 @@ def runABCTest(testType, model, dataLoader, epoch, args, return_preds=False):
 
     # Text file logging
     if not return_preds:
-        f = open(os.path.join("./Data/Results", str(args["model_chromosome"]) + "," + str(args["instance_num"]) + "," + "TrainingLog.txt"), "a")
+        f = open(os.path.join(file_path + "/Results", str(args["model_chromosome"]) + "," + str(args["instance_num"]) + "," + "TrainingLog.txt"), "a")
         f.write("\n")
         f.write("****" + testType + " FOR EPOCH(train)/CHROMOSOME(test): " + str(epoch) + "\n")
         f.write("TRUE POSITIVES: " +  str(TP) + "\n")
@@ -148,16 +148,16 @@ def runABCTest(testType, model, dataLoader, epoch, args, return_preds=False):
         f.close()
 
         if testType == "Validation":
-            with open(os.path.join("./Data/Results", str(args["model_chromosome"]) + "," + str(args["instance_num"]) + "," + "ValAcc.txt"), "a") as valf:
+            with open(os.path.join(file_path + "/Results", str(args["model_chromosome"]) + "," + str(args["instance_num"]) + "," + "ValAcc.txt"), "a") as valf:
                 valf.write(str((TP+TN)/(total_A_Comp+total_B_Comp))+"\n")
 
         if testType == "Testing":
-            with open(os.path.join("./Data/Results", str(args["model_chromosome"]) + "," + "TestAcc.txt"), "a") as testf:
+            with open(os.path.join(file_path + "/Results", str(args["model_chromosome"]) + "," + "TestAcc.txt"), "a") as testf:
                 testf.write(str(args["instance_num"]) + "," + str((TP+TN)/(total_A_Comp+total_B_Comp)) + "\n")
 
         # Testing set never shuffled, so we record the predictions made for comparison to ground truth
         if testType == "Testing":
-            with open(os.path.join("./Data/Results", str(args["model_chromosome"]) + "," + str(args["instance_num"]) + "," + "TestPredictions.txt"), "w") as testf:
+            with open(os.path.join(file_path + "/Results", str(args["model_chromosome"]) + "," + str(args["instance_num"]) + "," + "TestPredictions.txt"), "w") as testf:
 
                 for p in range(len(predictions)):
                     testf.write(str(predictions[p]) + "," + str(expectedOuts[p]) + "\n")
@@ -167,16 +167,16 @@ def runABCTest(testType, model, dataLoader, epoch, args, return_preds=False):
     return ((TP+TN)/(total_A_Comp+total_B_Comp))
 
 
-def trainABCNet(model, dloader_train, dloader_val, dloader_test, args):
+def trainABCNet(model, dloader_train, dloader_val, dloader_test, args, file_path):
     n_batches = len(dloader_train.dataset)/args["batch_size"]
-    printToNetLog(args, n_batches)
+    printToNetLog(args, n_batches, file_path)
 
     # Init the loss and optimizer functions
     model.loss = getLoss(args)
     model.optimizer = getOptimizer(model, args)
 
     print("Performing initial Validation Test")
-    acc = runABCTest("Validation", model, dloader_val, 0, args)
+    acc = runABCTest("Validation", model, dloader_val, 0, args, file_path)
     max_val_acc = 0.0 # Used for early stopping and LR reduction
 
     # Loop over each epoch of training
@@ -224,10 +224,10 @@ def trainABCNet(model, dloader_train, dloader_val, dloader_test, args):
                 print("Last Output:", outputs[0][0], '\n', "Desired Output:", labels[0])
 
         training_loss = np.average(total_train_loss[0])
-        storeTrainAccuracies(args, running_predictions, running_labels, running_zero_norms, training_loss)
+        storeTrainAccuracies(args, running_predictions, running_labels, running_zero_norms,file_path, training_loss)
 
         #VALIDATION RUN AFTER EPOCH
-        acc = runABCTest("Validation", model, dloader_val, epoch+1, args)
+        acc = runABCTest("Validation", model, dloader_val, epoch+1, args, file_path)
         
         if (args["use_early_stopping"]):
             if (acc > max_val_acc):
@@ -248,7 +248,7 @@ def trainABCNet(model, dloader_train, dloader_val, dloader_test, args):
     print("-"*30 + "\nTraining finished \nRunning Final Test...")
 
     # Run a test for withheld chromosome to evaluate its performance
-    runABCTest("Testing", model, dloader_test, i, args)
+    runABCTest("Testing", model, dloader_test, i, args, file_path)
     return model
 
 
@@ -312,10 +312,20 @@ def loadArgs(args):
 ########## MAIN  CODE ###########
 #################################
 if __name__ == '__main__':
-    use_seed = False
+    use_seed = True
     args = {}
-    model_chromosome = 0 # We will use chr1 as our test set
-    instance_num = 1 # Model instance number. Increment this if you want to train a second model with different logs tracked
+
+    if len(sys.argv) > 1: # If we are using args, set the current test chrom and instance to them
+        print("SLURM run detected")
+        model_chromosome = int(float(sys.argv[1])) #The chromosome withheld for testing
+        instance_num = model_chromosome #int(float(sys.argv[2])) The particular count of model being run for the given chromosome
+        args['env'] = "graham"
+        file_path = './Data/' + sys.argv[2]
+    else:
+        model_chromosome = 0 # We will use chr1 as our test set for single model training
+        instance_num = 1 # Model instance number. Increment this if you want to train a second model with different logs tracked
+        file_path = './Data'
+
 
     args["model_chromosome"] = model_chromosome
     args["instance_num"] = instance_num
@@ -343,14 +353,14 @@ if __name__ == '__main__':
         torch.backends.cudnn.deterministic = True
 
     print ("CHROMOSOME WITHHELD: ", str(model_chromosome))
-    dloader_train, dloader_val, dloader_test = DNADataLoader.getLoaders(model_chromosome, args)
+    dloader_train, dloader_val, dloader_test = DNADataLoader.getLoaders(model_chromosome, args, file_path)
 
     ABCModel = ABCNET()
     if args["use_cuda"]:
         ABCModel = ABCModel.to('cuda')
 
     print("\nBeginning model training...")
-    ABCModelTrained = trainABCNet(ABCModel, dloader_train, dloader_val, dloader_test, args)
-    if not os.path.exists("model_ckpts"):
-        os.mkdir("model_ckpts")
-    saveModel(ABCModelTrained, args, "./Data/ModelCkpts/ABCNet-" + args['model_name'] + "-Chr" + str(model_chromosome) + ".pt")
+    ABCModelTrained = trainABCNet(ABCModel, dloader_train, dloader_val, dloader_test, args, file_path)
+    if not os.path.exists("./Data/model_ckpts"):
+        os.mkdir("./Data/model_ckpts")
+    saveModel(ABCModelTrained, args, "./Data/model_ckpts/ABCNet-" + args['model_name'] + "-Chr" + str(model_chromosome) + ".pt")

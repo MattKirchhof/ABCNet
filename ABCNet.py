@@ -56,7 +56,7 @@ class ABCNET(torch.nn.Module):
         self.conv2 = torch.nn.Conv1d(in_channels = 64, out_channels = 128, kernel_size =21, stride =4, padding = 10)
         torch.nn.init.kaiming_uniform_(self.conv2.weight)
 
-        self.pool1 = torch.nn.AvgPool1d(kernel_size=6250, stride=1, padding=0)
+        self.pool1 = torch.nn.AvgPool1d(kernel_size=15625, stride=1, padding=0)
 
         #Fully Connected layers
         self.fc1 = torch.nn.Linear(128,1)

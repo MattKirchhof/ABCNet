@@ -11,8 +11,15 @@ import DNADataLoader
 class PreprocessingCSV():
     globalCurrentBin = 0 #Keeps track of the range of bins belonging to each chromosome
     global_basepath = './Data/'
+    compartment_file = 'compartment_file.txt'
 
-    def __init__(self):
+    def __init__(self,base_path, file_name):
+        self.global_basepath = './Data/' + base_path + '/'
+        self.compartment_file = file_name
+
+        if not os.path.exists(self.global_basepath):
+            os.mkdir(self.global_basepath)
+
         if not os.path.exists(self.global_basepath + 'Processed/'):
             os.mkdir(self.global_basepath + 'Processed/')
 
@@ -31,7 +38,7 @@ class PreprocessingCSV():
         chunkNum = 0 # To keep track of our progress
         chunk100k = "" # Stores each bin of characters
             
-        with open(self.global_basepath + 'Genome_Data/' + chrom + '.fa') as rawFile:
+        with open('./Data/Genome_Data/' + chrom + '.fa') as rawFile:
             next(rawFile) # Skip first line (labels)
             for line in rawFile:
                 if (count < 1999): # collect all the data into our bin
@@ -48,6 +55,40 @@ class PreprocessingCSV():
                     processedDataFile.write(expectedOut + "," + chunk100k + '\n')
 
                     chunk100k = ""
+        
+    #Loads in the information and writes contents as "expected output, Custom character bin" per line
+    def processCustomChunks(self, chrom, resolution_size, single_file):
+        processedDataFile = open(self.global_basepath + 'Processed/' + chrom + 'rawPCA.fa', 'w')
+        
+        #First line of each processed chrom file looks like:
+        # chr1,30,0,1954,0.486666
+        # chr2,30,1955,3774,0.486666
+        processedDataFile.write(chrom + ',' + str(self.getStartingBinValue_custom(chrom, resolution_size, single_file)) + ',' + str(self.globalCurrentBin) + ',' + str(self.globalCurrentBin + self.getEndingBinNumber_custom(chrom,resolution_size,single_file)) + '\n')
+
+        self.globalCurrentBin += self.getEndingBinNumber_custom(chrom,resolution_size,single_file) +1
+
+        count = 0 # Custom chunks of data equals 2000 lines
+        chunkNum = 0 # To keep track of our progress
+        chunkCustom = "" # Stores each bin of characters
+        bin_size = (resolution_size / 50) - 1
+            
+        with open('./Data/Genome_Data/' + chrom + '.fa') as rawFile:
+            next(rawFile) # Skip first line (labels)
+            for line in rawFile:
+                if (count < bin_size): # collect all the data into our bin
+                    chunkCustom += line.strip()
+                    count += 1
+                    
+                else:  # Add bin as line to our file
+                    chunkCustom += line.strip()
+                    count = 0
+                    chunkNum += 1
+                    expectedOut = self.getPCA_custom(chunkNum, chrom, resolution_size, single_file)
+
+                    #print(chunkNum, expectedOut)
+                    processedDataFile.write(expectedOut + "," + chunkCustom + '\n')
+
+                    chunkCustom = ""
 
 
     # Gets the PCA value belonging to the current bin
@@ -62,6 +103,43 @@ class PreprocessingCSV():
                     PCA = data[5]
                     return PCA
             return '0'
+    
+    # Gets the PCA value belonging to the current bin
+    def getPCA_custom(self, chunkNum, chrom, resolution_size,single_file = False):
+
+        if single_file == False:
+            with open(self.global_basepath + 'Compartment_Data/mESC-' + chrom + '-pcaOut-res100000.PC1.txt') as compFile:
+                compFile.readline() # skip first line
+
+                for line in compFile:
+                    data = line.split()
+                    
+                    if (chunkNum*resolution_size >= int(data[1]) and chunkNum*resolution_size <= int(data[2])):
+                        #check if the PCA is a nan value:
+                        if data[3] == 'nan':
+                            return '0'
+                        else:
+                            PCA = data[3]
+                            return PCA
+                return '0'
+
+        else: #the compartment file is a single file
+            with open(self.global_basepath + 'Compartment_Data/' + self.compartment_file) as compFile:
+                compFile.readline() # skip first line
+
+                for line in compFile:
+                    data = line.split()
+                    
+                    if chrom == data[0]: #only process for the appropriate chromosome 
+                        if (chunkNum*resolution_size >= int(data[1]) and chunkNum*resolution_size <= int(data[2])):
+                            #check if the PCA is a nan value:
+                            if data[3] == 'nan':
+                                return '0'
+                            else:
+                                PCA = data[3]
+                                return PCA
+                return '0'
+
 
 
     #Gets the location of the first evaluated bin in the data (could range from bin 30 to bin 32)
@@ -73,7 +151,6 @@ class PreprocessingCSV():
             firstbin = int( int(data[2])/100000 )
             return firstbin
 
-
     #Gets the total number of bins in the current dataset
     def getEndingBinNumber(self, chrom):
         with open(self.global_basepath + 'Compartment_Data/mESC-' + chrom + '-pcaOut-res100000.PC1.txt') as binFile:
@@ -82,13 +159,60 @@ class PreprocessingCSV():
             last100kBin = int( int(last_element)/100000) 
 
             return last100kBin
+    
+    #Gets the location of the first evaluated bin in the data (could range from bin 30 to bin 32)
+    def getStartingBinValue_custom(self, chrom, resolution_size, single_file):
+
+        if single_file == False:
+            with open(self.global_basepath + 'Compartment_Data/mESC-' + chrom + '-pcaOut-res100000.PC1.txt') as binFile:
+                binFile.readline() # skip first line
+                data = binFile.readline().split()
+
+                firstbin = int( int(data[1])/resolution_size )
+                return firstbin
+        
+        else: #its a single file 
+            with open(self.global_basepath + 'Compartment_Data/' + self.compartment_file) as binFile:
+                binFile.readline() # skip first line
+                data = binFile.readline().split()
+
+                firstbin = int( int(data[1])/resolution_size )
+                return firstbin
+
+
+    #Gets the total number of bins in the current dataset
+    def getEndingBinNumber_custom(self, chrom, resolution_size, single_file):
+
+        if single_file == False:
+            with open(self.global_basepath + 'Compartment_Data/mESC-' + chrom + '-pcaOut-res100000.PC1.txt') as binFile:
+                elements = binFile.read().split()
+                last_element = elements[len(elements)-3]
+                last100kBin = int( int(last_element)/100000) 
+
+                return last100kBin
+
+        else: #it is a single file
+
+            with open(self.global_basepath + 'Compartment_Data/' + self.compartment_file) as binFile:
+
+                for line in binFile: 
+                    data = line.split()
+                    chrom_label = data[0]
+
+                    if chrom_label == '#bedGraph':
+                        current_chrom = data[2].split(':')
+
+                        if current_chrom[0] == chrom:
+                            last_binVal = data[2].split('-')
+                            last_bin = int (int(last_binVal[1]) / resolution_size)
+                            return last_bin
 
 
     # Reprocesses all bins of data
-    def reprocess(self, ):
-        for label in range(19):
+    def reprocess(self,total_chrom, resolution_size, single_file):
+        for label in range(total_chrom):
             print("Current Chrom: chr" + str(label+1))
-            self.process100kChunks("chr" + str(label+1))
+            self.processCustomChunks("chr" + str(label+1), resolution_size, single_file)
         print("Reprocessing Completed...")
 
 
@@ -304,10 +428,17 @@ class PreprocessingCSV():
 
 
 if __name__ == '__main__':
-    p = PreprocessingCSV()
+
+    base_path = sys.argv[1]
+    file_name = sys.argv[2]
+
+    p = PreprocessingCSV(base_path, file_name)
     extra_names = "_mESC" # An extra string to attach to the resulting file folders
 
-    p.reprocess()
+    total_chrom = 19
+    resolution_size = 250000
+    single_file = True
+    p.reprocess(total_chrom, resolution_size, single_file)
     p.NormalizeFiles()
     p.remove_centroids()
     p.mpOnehotEncoding(extra_names)

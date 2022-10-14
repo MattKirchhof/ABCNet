@@ -6,6 +6,7 @@ from torch.utils.data.sampler import SubsetRandomSampler, BatchSampler, Sequenti
 import multiprocessing
 
 class DNADataset(Dataset):
+
     def __init__(self, chromosomes, path=None):
         '''
         Accepts a list of chromosomes to load into its dataset. This is generally a list of 1 or more chromosome indices
@@ -114,11 +115,11 @@ def custom_collate_fn(batch):
     return torch.Tensor(labels), torch.Tensor(examples), torch.Tensor(zero_norms)
 
 
-def getLoaders(withheld_test_chrom, args, chrom_limiter=2, shuffle_data = True, valid_size = 0.1):
+def getLoaders(withheld_test_chrom, args,file_path, chrom_limiter=19, shuffle_data = True, valid_size = 0.1):
     chroms = [i for i in range(chrom_limiter) if i != withheld_test_chrom]
 
-    data = DNADataset(chroms, args['data_path'])
-    data_test = DNADataset([withheld_test_chrom], args['data_path'])
+    data = DNADataset(chroms, file_path + args['data_path'])
+    data_test = DNADataset([withheld_test_chrom], file_path + args['data_path'])
 
     # train and valid
     num_trainval_data = len(data)
