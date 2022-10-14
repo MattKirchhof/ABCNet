@@ -58,12 +58,8 @@ The ABCNet 250kb has the same limited requirements as the original. The followin
 1) Python 3.9.4 or later -> Earlier versions of python3 should also work just fine
 2) Numpy -> Install using pip with "pip install numpy"
 3) PyTorch -> Install by visiting https://pytorch.org/get-started/locally/
-4) Pandas -> Install using pip with "pip install pandas"
-5) Matplotlib -> Install using pip with "pip install pandas"
-6) Sklearn -> Install using pip with "pip install sklearn"
 
-# Running ABCNet 250kb Version
-
+## Running ABCNet 250kb Version
 
 
 
@@ -79,12 +75,19 @@ The scripts bin_predictions.py and raw_predictions.py can be used to visualize t
 3. bin_predictions.py: discretizes the predictions output by the model and compares them to the target value which has also been discretized. 
 4. raw_predictions.py: shows the continuous output of predictions from the ABCnet model compared to the targets values
 
+## Environment
 
-## How to run Graph Scripts
+The following packages are required:
+
+1) Pandas -> Install using pip with "pip install pandas"
+2) Matplotlib -> Install using pip with "pip install pandas"
+3) Sklearn -> Install using pip with "pip install sklearn"
+
+## Running graph scripts
 
 ### Command line details:
 
-1. create a visual discretized representation and comparison of the compartments from 2 compartment files
+1. Create a visual discretized representation and comparison of the compartments from 2 compartment files
 ```
 binary_compartment.py path_to_compartment_file1 path_to_compartment_file2 name_of_cell1 name_of_cell2
 
@@ -95,13 +98,33 @@ positional arguments:
     name_of_cell2                the name of the cell line to which the second compartment file belongs 
 ```
 
-2. create a chart to showcase the continuous and discretized representation of compartments from a single compartment file
+2. Create a chart to showcase the continuous and discretized representation of compartments from a single compartment file
 ```
 bin_raw_combination.py path_to_compartment_file name_of_cell
 
 positional arguments:
     path_to_compartment file    file path to where the compartment file is located
     name_of_cell                the name of the cell line to which the compartment file belongs 
+```
+
+3. Create a chart to showcase the discretized predictions of the ABCNet model and the target compartments
+```
+bin_predictions.py path_to_predictions_file name_of_predictions name_of_targets
+
+positional arguments:
+    path_to_predictions_file    file path to the output file by the ABCNet model containing compartment predictions and target values
+    name_of_predictions         the title of the predictions chart that will be generated 
+    name_of_targets             the title of the targets chart that will be generated
+```
+
+4. Create a chart to showcase the continuous predictions of the ABCNet model and the target compartments
+```
+raw_predictions.py path_to_predictions_file name_of_predictions name_of_targets
+
+positional arguments:
+    path_to_predictions_file    file path to the output file by the ABCNet model containing compartment predictions and target values
+    name_of_predictions         the title of the predictions chart that will be generated 
+    name_of_targets             the title of the targets chart that will be generated
 ```
 
 
