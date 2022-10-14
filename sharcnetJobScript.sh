@@ -14,4 +14,4 @@ pip install --no-index --upgrade pip
 pip install torch --no-index
 pip install numpy --no-index
 pip install matplotlib --no-index
-python ABCModelHarness.py $SLURM_ARRAY_TASK_ID noATP
+python ABCModelHarness.py $SLURM_ARRAY_TASK_ID mESC
