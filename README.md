@@ -9,9 +9,7 @@ ABCNet has limited requirements. Only the following packages are required:
 1) Python 3.9.4 or later -> Earlier versions of python3 should also work just fine
 2) Numpy -> Install using pip with "pip install numpy"
 3) PyTorch -> Install by visiting https://pytorch.org/get-started/locally/
-4) Pandas -> Install using pip with "pip install pandas"
-5) Matplotlib -> Install using pip with "pip install pandas"
-6) Sklearn -> Install using pip with "pip install sklearn"
+
 
 ## Running ABCNet yourself
 
@@ -49,6 +47,26 @@ If ABCNet was used in your analysis, please cite:
 
 M. Kirchhof, C. J. Cameron and S. C. Kremer, "End-to-end chromosomal compartment prediction from reference genomes," _2021 IEEE International Conference on Bioinformatics and Biomedicine (BIBM)_, 2021, pp. 50-57, doi: [10.1109/BIBM52615.2021.9669521](https://doi.org/10.1109/BIBM52615.2021.9669521)
 
+# ABCNet 250kb Version
+
+ABCNet 250kb is a version of the original algorithm that uses compartment files that have a resolution of 250kb. Each compartment bin is 250kb in size. In addition, this version utilizes a single compartment file containing all chromosomes, rather than those often seperated by chromosome. 
+
+## Environment
+
+The ABCNet 250kb has the same limited requirements as the original. The following packages are required:
+
+1) Python 3.9.4 or later -> Earlier versions of python3 should also work just fine
+2) Numpy -> Install using pip with "pip install numpy"
+3) PyTorch -> Install by visiting https://pytorch.org/get-started/locally/
+4) Pandas -> Install using pip with "pip install pandas"
+5) Matplotlib -> Install using pip with "pip install pandas"
+6) Sklearn -> Install using pip with "pip install sklearn"
+
+# Running ABCNet 250kb Version
+
+
+
+
 # Graph Generating Scripts
 
 The purpose of these scripts is to anaylze and visualize the datasets used and output by ABCnet. The compartment files such as "mouse_compartment_file.txt" can be visualized using the scripts: 
@@ -64,7 +82,27 @@ The scripts bin_predictions.py and raw_predictions.py can be used to visualize t
 
 ## How to run Graph Scripts
 
-### Command line details
+### Command line details:
+
+1. create a visual discretized representation and comparison of the compartments from 2 compartment files
+```
+binary_compartment.py path_to_compartment_file1 path_to_compartment_file2 name_of_cell1 name_of_cell2
+
+positional arguments:
+    path_to_compartment file1    file path to where the first compartment file is located
+    path_to_compartment file2    file path to where the second compartment file is located
+    name_of_cell1                the name of the cell line to which the first compartment file belongs 
+    name_of_cell2                the name of the cell line to which the second compartment file belongs 
+```
+
+2. create a chart to showcase the continuous and discretized representation of compartments from a single compartment file
+```
+bin_raw_combination.py path_to_compartment_file name_of_cell
+
+positional arguments:
+    path_to_compartment file    file path to where the compartment file is located
+    name_of_cell                the name of the cell line to which the compartment file belongs 
+```
 
 
 
