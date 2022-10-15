@@ -59,7 +59,31 @@ The ABCNet 250kb has the same limited requirements as the original. The followin
 2) Numpy -> Install using pip with "pip install numpy"
 3) PyTorch -> Install by visiting https://pytorch.org/get-started/locally/
 
-## Running ABCNet 250kb Version
+# Running ABCNet 250kb:
+
+ABCNet 250kb can be run in a similar way as to the original with some minor differences that utilize command line parameters and make it easier to use clustered supercomputers, which can submit multiple jobs at once.
+
+### Command line details:
+
+1. Preprocess the reference genome and prepare the training and testing data
+```
+DataPreprocessing.py name_of_folder_inside_Data_folder name_of_file_w_extension
+
+positional arguments:
+
+    name_of_folder_inside_Data_folder       the folder inside the Data folder that holds the compartment data and will hold results
+    name_of_file_w_extension                the name of the compartment file with the extension (i.e. .txt)
+```
+
+2. Run the ABCNet algorithm, train your model and test it on a withehld chromosome
+```
+ABCModelHarness.py chromosome_usedfor_testing folder_inside_Data
+
+positional arguments:
+
+    name_of_folder_inside_Data_folder       the folder inside the Data folder that holds the compartment data and will hold results
+    chromosome_usedfor_testing              chromosome not be used for training but instead will be witheld for testing and accuracy
+```
 
 
 
