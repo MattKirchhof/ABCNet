@@ -59,7 +59,7 @@ The ABCNet 250kb has the same limited requirements as the original. The followin
 2) Numpy -> Install using pip with "pip install numpy"
 3) PyTorch -> Install by visiting https://pytorch.org/get-started/locally/
 
-# Running ABCNet 250kb:
+## Running ABCNet 250kb:
 
 ABCNet 250kb can be run in a similar way as to the original with some minor differences that utilize command line parameters and make it easier to use clustered supercomputers, which can submit multiple jobs at once.
 
